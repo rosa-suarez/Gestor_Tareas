@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/tarea.dart';
+import '../data/base_datos.dart';
 
-// Pantalla base SIN persistencia ni operaciones CRUD implementadas.
-// Conserva las indicaciones TODO para orientar tu trabajo.
 class TareasPage extends StatefulWidget {
-  const TareasPage({super.key});
+  const TareasPage({super.key, this.baseDatos});
+
+  final AppDatabase? baseDatos;
 
   @override
   State<TareasPage> createState() => _TareasPageState();
@@ -13,17 +14,48 @@ class TareasPage extends StatefulWidget {
 class _TareasPageState extends State<TareasPage> {
   final TextEditingController _tituloController = TextEditingController();
 
+  late final AppDatabase _db;
   List<Tarea> _tareas = [];
+  bool _cargando = true;
 
   @override
   void initState() {
     super.initState();
-
+    _db = widget.baseDatos ?? AppDatabase();
+    _cargarTareas();
   }
 
-  void _agregarTarea() {
-    _pendiente('Implementar registro de tarea');
+ Future<void> _cargarTareas() async {
+  try {
+    final tareas = await _db.obtenerTareas();
+    if (!mounted) return;
+    setState(() {
+      _tareas = tareas;
+      _cargando = false;
+    });
+  } catch (e) {
+    if (!mounted) return;
+    setState(() => _cargando = false);
+    _pendiente('No se pudieron cargar las tareas: $e');
   }
+}
+
+ Future<void> _agregarTarea() async {
+  final titulo = _tituloController.text.trim();
+
+  if (!Tarea.tituloValido(titulo)) {
+    _pendiente('Escribe un título para la tarea');
+    return;
+  }
+
+  try {
+    await _db.agregarTarea(titulo);
+    _tituloController.clear();
+    await _cargarTareas();
+  } catch (e) {
+    _pendiente('No se pudo guardar la tarea: $e');
+  }
+}
 
   void _alternarCompletada(Tarea tarea, bool completada) {
     _pendiente('Implementar actualización de tarea');
@@ -37,6 +69,7 @@ class _TareasPageState extends State<TareasPage> {
     _pendiente('Implementar eliminación de tarea');
   }
 
+
   void _pendiente(String mensaje) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensaje)),
@@ -46,6 +79,7 @@ class _TareasPageState extends State<TareasPage> {
   @override
   void dispose() {
     _tituloController.dispose();
+    _db.close();
     super.dispose();
   }
 
