@@ -163,7 +163,7 @@ class _TareasPageState extends State<TareasPage> {
             const Text('Mis tareas', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Expanded(
-              child: _tareas.isEmpty
+              child: _cargando
                   ? const Center(child: Text('Todavía no hay tareas guardadas'))
                   : ListView.builder(
                       itemCount: _tareas.length,
