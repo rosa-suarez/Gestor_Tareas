@@ -39,7 +39,8 @@ class AppDatabase extends _$AppDatabase {
 
   // SELECT * FROM tareas ORDER BY id
   Future<List<Tarea>> obtenerTareas() async {
-    final consulta = select(tareas)..orderBy([(t) => OrderingTerm(expression: t.id)]);
+    final consulta = select(tareas)..orderBy([(t) => OrderingTerm(expression: t.completada), 
+    (t) => OrderingTerm(expression: t.id)]);
     final filas = await consulta.get();
 
     return filas

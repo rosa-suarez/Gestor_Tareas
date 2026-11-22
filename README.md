@@ -8,7 +8,7 @@ Se eligió **Drift** junto con **drift_flutter** para trabajar con SQLite desde 
 
 - **drift:** Permite crear las tablas y realizar consultas a la base de datos (INSERT, SELECT, UPDATE y DELETE) utilizando Dart de forma asíncrona y con tipos de datos.
 - **drift_flutter:** Facilita la conexión con la base de datos dependiendo de la plataforma. Permite utilizar SQLite en escritorio y móvil, y SQLite mediante WebAssembly en web, sin tener que cambiar el código.
-- **drift_dev y build_runner:** Se utilizan durante el desarrollo para generar automáticamente el archivo `database.g.dart`, que contiene las clases necesarias para trabajar con las tablas.
+- **drift_dev y build_runner:** Se utilizan durante el desarrollo para generar automáticamente el archivo `base_datos.g.dart`, que contiene las clases necesarias para trabajar con las tablas.
 
 Se eligió Drift porque permite utilizar la misma tecnología de persistencia en las diferentes plataformas. Se descartó `sqflite` porque tiene limitaciones para trabajar en web y escritorio, y `shared_preferences` porque está pensado para guardar preferencias y datos sencillos, no para manejar una base de datos.
 
@@ -25,3 +25,20 @@ CREATE TABLE tareas (
 
 - Cada registro se identifica con `id`, que SQLite asigna solo (autoincremento).
 - SQLite no tiene tipo booleano, por eso `completada` se guarda como 0 o 1.
+
+## Cómo ejecutar
+
+```bash
+flutter pub get
+flutter test
+flutter run -d chrome     # web
+flutter run -d windows    # escritorio (requiere Visual Studio con C++)
+flutter devices           # ver el id del celular conectado
+flutter run -d <id>       # Android (celular con depuración USB activada)
+```
+
+Para web, `sqlite3.wasm` y `drift_worker.js` ya están en `web/` (versión de drift 2.35.4).
+
+## Plataformas
+
+- Probadas: Windows, web (Chrome) y Android (celular físico).
